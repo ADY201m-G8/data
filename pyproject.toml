@@ -1,6 +1,6 @@
 [project]
 name = "ady201m-data"
-version = "0.1.0"
+version = "0.2.0"
 description = "Data collection and preperation for ADY201m project."
 readme = "README.md"
 requires-python = ">=3.12"
