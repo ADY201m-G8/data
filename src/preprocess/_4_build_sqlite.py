@@ -46,6 +46,10 @@ def save_to_sqlite(db_path: Path, data: list[tuple[str, str]]) -> None:
         conn.commit()
 
 
-if __name__ == "__main__":
+def main():
     data = process_csv(PROCESSED_DATA_PATH / "students.csv")
     save_to_sqlite(DB_FOLDER_PATH / "db.sqlite3", data)
+
+
+if __name__ == "__main__":
+    main()

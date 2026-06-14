@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 
-from src.preprocess import RAW_CSV_PATH, IMG_FOLDER_PATH, WEB_SOURCE_PATH
+from src.preprocess import IMG_FOLDER_PATH, RAW_CSV_PATH, WEB_SOURCE_PATH
 
 
 def process_on_csv(csv_path: Path) -> None:
@@ -35,7 +35,7 @@ def process_on_csv(csv_path: Path) -> None:
     print(f"Extracted {success_count} images from {csv_path}")
 
 
-def process_on_csv_dataset() -> None:
+def main() -> None:
     csvs = list(RAW_CSV_PATH.glob("*.csv"))
 
     for csv_file in csvs:
@@ -43,4 +43,4 @@ def process_on_csv_dataset() -> None:
 
 
 if __name__ == "__main__":
-    process_on_csv_dataset()
+    main()

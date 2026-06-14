@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.preprocess import RAW_CSV_PATH, PROCESSED_DATA_PATH
+from src.preprocess import PROCESSED_DATA_PATH, RAW_CSV_PATH
 
 
 def process_csv(csv_path: Path) -> pd.DataFrame:
@@ -34,15 +34,21 @@ def merge_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def process_and_merge_csvs(file_paths: list[Path]) -> pd.DataFrame:
+def process_and_merge_csvs(csv_paths: list[Path]) -> pd.DataFrame:
     return (
-        reduce(merge_dataframes, map(process_csv, file_paths))
-        if file_paths
+        reduce(merge_dataframes, map(process_csv, csv_paths))
+        if csv_paths
         else pd.DataFrame()
     )
 
 
-if __name__ == "__main__":
+def main() -> None:
     csv_list = list(RAW_CSV_PATH.glob("*.csv"))
-    final_df = process_and_merge_csvs(csv_list)
-    final_df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)
+
+    df = process_and_merge_csvs(csv_list)
+
+    df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)
+
+
+if __name__ == "__main__":
+    main()

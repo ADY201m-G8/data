@@ -48,9 +48,9 @@ def save_to_chroma(
     )
 
 
-def pipeline(img_folder_path: Path, csv_path: Path) -> None:
-    img_paths = list(img_folder_path.glob("*"))
-    fullnames_dict = parse_csv_to_dict(csv_path)
+def main() -> None:
+    img_paths = list(IMG_FOLDER_PATH.glob("*"))
+    fullnames_dict = parse_csv_to_dict(PROCESSED_DATA_PATH / "students.csv")
 
     keys = []
     fullnames = []
@@ -68,4 +68,4 @@ def pipeline(img_folder_path: Path, csv_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    pipeline(IMG_FOLDER_PATH, PROCESSED_DATA_PATH / "students.csv")
+    main()

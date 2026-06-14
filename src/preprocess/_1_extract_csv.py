@@ -71,7 +71,7 @@ def pipeline_html_to_csv(html_path: Path, csv_path: Path) -> bool:
         return False
 
 
-def process_on_scrape_data() -> None:
+def main() -> None:
     htmls = list(WEB_SOURCE_PATH.glob("*.html"))
 
     for html in htmls:
@@ -84,4 +84,4 @@ def process_on_scrape_data() -> None:
 
 
 if __name__ == "__main__":
-    process_on_scrape_data()
+    main()
