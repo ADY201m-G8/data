@@ -5,7 +5,7 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
-from src.preprocess import CSV_PATH, WEB_SOURCE_PATH
+from src.preprocess import RAW_CSV_PATH, WEB_SOURCE_PATH
 
 HEADERS = ["Index", "Image", "Code", "Surname", "Middle name", "Given name"]
 
@@ -79,7 +79,7 @@ def process_on_scrape_data() -> None:
 
         pipeline_html_to_csv(
             WEB_SOURCE_PATH / f"{subject}.html",
-            CSV_PATH / f"{subject}.csv",
+            RAW_CSV_PATH / f"{subject}.csv",
         )
 
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.preprocess import CSV_PATH, PROCESSED_DATA_PATH
+from src.preprocess import RAW_CSV_PATH, PROCESSED_DATA_PATH
 
 
 def process_csv(csv_path: Path) -> pd.DataFrame:
@@ -43,6 +43,6 @@ def process_and_merge_csvs(file_paths: list[Path]) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    csv_list = list(CSV_PATH.glob("*.csv"))
+    csv_list = list(RAW_CSV_PATH.glob("*.csv"))
     final_df = process_and_merge_csvs(csv_list)
     final_df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)

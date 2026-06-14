@@ -3,7 +3,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from src.preprocess import DB_PATH, PROCESSED_DATA_PATH
+from src.preprocess import DB_FOLDER_PATH, PROCESSED_DATA_PATH
 
 
 def process_csv(path: Path) -> list[tuple]:
@@ -37,7 +37,7 @@ def insert_students(cursor: sqlite3.Cursor, data: list[tuple]) -> None:
 
 
 def save_to_sqlite(db_path: Path, data: list[tuple[str, str]]) -> None:
-    os.makedirs(DB_PATH, exist_ok=True)
+    os.makedirs(DB_FOLDER_PATH, exist_ok=True)
 
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
@@ -48,4 +48,4 @@ def save_to_sqlite(db_path: Path, data: list[tuple[str, str]]) -> None:
 
 if __name__ == "__main__":
     data = process_csv(PROCESSED_DATA_PATH / "students.csv")
-    save_to_sqlite(DB_PATH / "db.sqlite3", data)
+    save_to_sqlite(DB_FOLDER_PATH / "db.sqlite3", data)
