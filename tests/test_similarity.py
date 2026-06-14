@@ -6,7 +6,7 @@ from insightface.app import FaceAnalysis
 
 from src import CHROMA_DB_FOLDER_PATH, EMBEDDING_MODEL, EXECUTION_PROVIDERS
 
-TARGET_IMAGE_PATH = Path("./src/tests/HE204320.jpg")
+TARGET_IMAGE_PATH = Path("./tests/HE204320.jpg")
 
 app = FaceAnalysis(name=EMBEDDING_MODEL, providers=EXECUTION_PROVIDERS)
 app.prepare(ctx_id=0, det_size=(224, 224))
