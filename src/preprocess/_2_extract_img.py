@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 
-from src.preprocess import IMG_FOLDER_PATH, RAW_CSV_PATH, WEB_SOURCE_PATH
+from src import RAW_IMG_FOLDER_PATH, RAW_CSV_PATH, WEB_SOURCE_PATH
 
 
 def process_on_csv(csv_path: Path) -> None:
@@ -23,10 +23,10 @@ def process_on_csv(csv_path: Path) -> None:
 
             source_path = os.path.join(WEB_SOURCE_PATH, relative_image_path)
 
-            destination_path = IMG_FOLDER_PATH / f"{student_code}{suffix}"
+            destination_path = RAW_IMG_FOLDER_PATH / f"{student_code}{suffix}"
 
             if os.path.exists(source_path):
-                os.makedirs(IMG_FOLDER_PATH, exist_ok=True)
+                os.makedirs(RAW_IMG_FOLDER_PATH, exist_ok=True)
                 shutil.copy2(source_path, destination_path)
                 success_count += 1
             else:

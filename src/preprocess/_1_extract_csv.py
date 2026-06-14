@@ -5,7 +5,7 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
-from src.preprocess import RAW_CSV_PATH, WEB_SOURCE_PATH
+from src import RAW_CSV_PATH, WEB_SOURCE_PATH
 
 HEADERS = ["Index", "Image", "Code", "Surname", "Middle name", "Given name"]
 

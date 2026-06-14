@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.preprocess import PROCESSED_DATA_PATH, RAW_CSV_PATH
+from src import PROCESSED_DATA_PATH, RAW_CSV_PATH
 
 
 def process_csv(csv_path: Path) -> pd.DataFrame:
