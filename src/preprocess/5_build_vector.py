@@ -1,78 +1,71 @@
+import csv
 from pathlib import Path
-from typing import Dict, List
 
+import chromadb
 import cv2
 import numpy as np
 from insightface.app import FaceAnalysis
 
-import os
-from typing import Any, Dict, Optional
-import chromadb
-from numpy import ndarray
-
+from src.preprocess import DB_FOLDER_PATH, IMG_FOLDER_PATH, PROCESSED_DATA_PATH
 
 app = FaceAnalysis(allowed_modules=["detection", "recognition"])
-app.prepare(ctx_id=0, det_size=(240, 240))
+app.prepare(ctx_id=0, det_size=(128, 128))
 
 
-def get_image_paths(folder_path: Path) -> List[Path]:
-    """Pure function to get all image file paths from a directory using pathlib."""
-    valid_extensions = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
-    return [
-        p
-        for p in folder_path.iterdir()
-        if p.is_file() and p.suffix.lower() in valid_extensions
-    ]
+def parse_csv_to_dict(csv_path: Path) -> dict[str, str]:
+    with open(csv_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        return {row["Code"]: row["Fullname"] for row in reader}
 
 
-def extract_embedding(image_path: Path) -> np.ndarray:
-    """Pure function that maps a Path object to its primary ArcFace embedding vector.
+def extract_embedding(img_path: Path) -> np.ndarray:
+    img = cv2.imread(str(img_path))
 
-    Returns a zero-vector if no face is detected.
-    """
-    img = cv2.imread(str(image_path))
     if img is None:
         return np.zeros(512)
 
     faces = app.get(img)
-    return faces[0].normed_embedding if faces else np.zeros(512)
+
+    if not faces:
+        print(f"Warning: no face found in {img_path}")
+        return np.zeros(512)
+
+    return faces[0].normed_embedding
 
 
-def process_images(folder_path: Path) -> Dict[str, np.ndarray]:
-    """High-level pipeline transforming paths into the final dictionary structure."""
-    img_paths = get_image_paths(folder_path)
+def save_to_chroma(
+    ids: list[str],
+    embeddings: list[np.ndarray],
+    fullnames: list[str],
+) -> None:
+    client = chromadb.PersistentClient(path=DB_FOLDER_PATH / "chroma")
+    collection = client.get_or_create_collection(name="all")
 
-    dictionary = {}
+    collection.add(
+        ids=ids,
+        embeddings=embeddings,
+        metadatas=[{"fullname": fullname} for fullname in fullnames],
+    )
+
+
+def pipeline(img_folder_path: Path, csv_path: Path) -> None:
+    img_paths = list(img_folder_path.glob("*"))
+    fullnames_dict = parse_csv_to_dict(csv_path)
+
+    keys = []
+    fullnames = []
+    embeddings = []
+
     for img_path in img_paths:
         student_code = img_path.stem
         embedding = extract_embedding(img_path)
-        dictionary[student_code] = {
-            "name": "",
-            "embedding": embedding
-        }
-    return {path.stem:  for path in paths}
+
+        keys.append(student_code)
+        fullnames.append(fullnames_dict[student_code])
+        embeddings.append(embedding)
+
+    save_to_chroma(keys, embeddings, fullnames)
 
 
-
-def store_embeddings_in_chroma(
-    data: Dict[str, Dict[str, Any]],
-    collection_name: str,
-    persist_directory: str = "./chroma_db",
-    filename: Optional[str] = None,
-) -> None:
-    client = chromadb.PersistentClient(path=persist_directory)
-    collection = client.get_or_create_collection(name=collection_name)
-
-    ids = list(data.keys())
-    embeddings = [item["embedding"].tolist() for item in data.values()]
-    metadatas = [
-        {"name": item["name"], **({"filename": filename} if filename else {})}
-        for item in data.values()
-    ]
-
-    collection.add(ids=ids, embeddings=embeddings, metadatas=metadatas)
-    
 if __name__ == "__main__":
-    target_folder = Path("./data/processed/imgs/")
-    embeddings_dict = process_images(target_folder)
-    # print(embeddings_dict)
+    pipeline(IMG_FOLDER_PATH, PROCESSED_DATA_PATH / "students.csv")
