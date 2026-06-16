@@ -19,7 +19,7 @@ def init_db(cursor: sqlite3.Cursor) -> None:
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS student (
-            [code] TEXT PRIMARY KEY,
+            [id] TEXT PRIMARY KEY,
             [fullname] TEXT NOT NULL
         )
         """
