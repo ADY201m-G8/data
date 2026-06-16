@@ -29,7 +29,7 @@ def init_db(cursor: sqlite3.Cursor) -> None:
 def insert_students(cursor: sqlite3.Cursor, data: list[tuple]) -> None:
     cursor.executemany(
         """
-        INSERT OR REPLACE INTO student (code, fullname)
+        INSERT OR REPLACE INTO student (id, fullname)
         VALUES (?, ?)
         """,
         data,

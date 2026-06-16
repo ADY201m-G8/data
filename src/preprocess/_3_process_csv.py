@@ -1,3 +1,4 @@
+import os
 from functools import reduce
 from pathlib import Path
 
@@ -47,6 +48,7 @@ def main() -> None:
 
     df = process_and_merge_csvs(csv_list)
 
+    os.makedirs(PROCESSED_DATA_PATH, exist_ok=True)
     df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)
 
 
