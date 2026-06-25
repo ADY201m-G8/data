@@ -1,14 +1,10 @@
-// Use DBML to define your database structure
-// Docs: https://dbml.dbdiagram.io/docs
-
 Table students {
   id text [pk]
   name text
 }
 
 Table subjects {
-  id integer [pk]
-  code text
+  id text [pk]
 }
 
 Table enrollments {
@@ -21,7 +17,7 @@ Table rooms {
 }
 
 Table lessons {
-  id integer [pk]
+  id integer [pk, increment]
   subject_id integer [ref: > subjects.id]
   room_id text [ref: > rooms.id]
   date date 
