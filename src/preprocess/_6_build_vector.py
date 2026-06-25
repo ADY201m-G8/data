@@ -7,7 +7,7 @@ import numpy as np
 from insightface.app import FaceAnalysis
 
 from src import (
-    DB_FOLDER_PATH,
+    SQLITE_PATH,
     EMBEDDING_MODEL,
     PROCESSED_DATA_PATH,
     RAW_IMG_FOLDER_PATH,
@@ -43,7 +43,7 @@ def save_to_chroma(
     embeddings: list[np.ndarray],
     fullnames: list[str],
 ) -> None:
-    client = chromadb.PersistentClient(path=DB_FOLDER_PATH / "chroma")
+    client = chromadb.PersistentClient(path=SQLITE_PATH / "chroma")
     collection = client.get_or_create_collection(
         name="all", metadata={"hnsw:space": "cosine"}
     )

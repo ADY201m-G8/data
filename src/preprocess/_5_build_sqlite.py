@@ -3,7 +3,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from src import DB_FOLDER_PATH, PROCESSED_DATA_PATH
+from src import SQLITE_PATH, PROCESSED_DATA_PATH
 
 SUBJECTS = ["ADY201m", "JPD123", "MAI391", "MAS291"]
 
@@ -54,7 +54,7 @@ def insert_rows(cursor: sqlite3.Cursor, students: list[tuple], subjects: list[st
 
 
 def save_to_sqlite(db_path: Path, students: list[tuple], subjects: list[str]) -> None:
-    os.makedirs(DB_FOLDER_PATH, exist_ok=True)
+    os.makedirs(SQLITE_PATH, exist_ok=True)
     os.remove(db_path) if db_path.exists() else None
 
     with sqlite3.connect(db_path) as conn:
@@ -66,7 +66,7 @@ def save_to_sqlite(db_path: Path, students: list[tuple], subjects: list[str]) ->
 
 def main():
     data = process_csv(PROCESSED_DATA_PATH / "students.csv")
-    save_to_sqlite(DB_FOLDER_PATH / "db.sqlite3", data, SUBJECTS)
+    save_to_sqlite(SQLITE_PATH / "db.sqlite3", data, SUBJECTS)
 
 
 if __name__ == "__main__":

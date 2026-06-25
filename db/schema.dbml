@@ -1,0 +1,43 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table students {
+  id text [pk]
+  name text
+}
+
+Table subjects {
+  id integer [pk]
+  code text
+}
+
+Table enrollments {
+  student_id text [ref: > students.id]
+  subject_id integer [ref: > subjects.id]
+}
+
+Table rooms {
+  id text [pk]
+}
+
+Table lessons {
+  id integer [pk]
+  subject_id integer [ref: > subjects.id]
+  room_id text [ref: > rooms.id]
+  date date 
+  slot integer
+
+  Indexes {
+    (room_id, slot) [unique] 
+  }
+}
+
+Table attendances {
+  lesson_id integer [ref: > lessons.id]
+  student_id text [ref: > students.id]
+  present integer
+
+  Indexes {
+    (lesson_id, student_id) [pk]
+  }
+}
