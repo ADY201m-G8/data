@@ -3,8 +3,6 @@ from src.preprocess import (
     _2_extract_img,
     _3_process_csv,
     _4_process_img,
-    _5_build_sqlite,
-    _6_build_vector,
 )
 
 
@@ -14,8 +12,6 @@ def run_pipeline():
         _2_extract_img,
         _3_process_csv,
         _4_process_img,
-        _5_build_sqlite,
-        _6_build_vector,
     ]
 
     for index, step in enumerate(steps, start=1):

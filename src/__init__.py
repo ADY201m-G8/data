@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 DB_PATH = Path("./db")
@@ -15,3 +16,8 @@ CHROMA_DB_FOLDER_PATH = DB_PATH / "chroma"
 
 EMBEDDING_MODEL = "buffalo_sc"
 EXECUTION_PROVIDERS = ["CUDAExecutionProvider", "CPUExecutionProvider"]
+
+
+os.makedirs(DB_PATH, exist_ok=True)
+os.makedirs(RAW_DATA_PATH, exist_ok=True)
+os.makedirs(PROCESSED_DATA_PATH, exist_ok=True)
