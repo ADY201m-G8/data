@@ -7,10 +7,9 @@ import numpy as np
 from insightface.app import FaceAnalysis
 
 from src import (
-    SQLITE_PATH,
     EMBEDDING_MODEL,
     PROCESSED_DATA_PATH,
-    RAW_IMG_FOLDER_PATH,
+    RAW_IMG_FOLDER_PATH, CHROMA_DB_FOLDER_PATH,
 )
 
 app = FaceAnalysis(name=EMBEDDING_MODEL, providers=["CUDAExecutionProvider"])
@@ -20,7 +19,7 @@ app.prepare(ctx_id=0, det_size=(224, 224))
 def parse_csv_to_dict(csv_path: Path) -> dict[str, str]:
     with open(csv_path, mode="r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
-        return {row["Code"]: row["Fullname"] for row in reader}
+        return {row["id"]: row["name"] for row in reader}
 
 
 def extract_embedding(img_path: Path) -> np.ndarray:
@@ -41,9 +40,9 @@ def extract_embedding(img_path: Path) -> np.ndarray:
 def save_to_chroma(
     ids: list[str],
     embeddings: list[np.ndarray],
-    fullnames: list[str],
+    names: list[str],
 ) -> None:
-    client = chromadb.PersistentClient(path=SQLITE_PATH / "chroma")
+    client = chromadb.PersistentClient(path=CHROMA_DB_FOLDER_PATH)
     collection = client.get_or_create_collection(
         name="all", metadata={"hnsw:space": "cosine"}
     )
@@ -51,16 +50,16 @@ def save_to_chroma(
     collection.add(
         ids=ids,
         embeddings=embeddings,
-        metadatas=[{"fullname": fullname} for fullname in fullnames],
+        metadatas=[{"name": name} for name in names],
     )
 
 
 def main() -> None:
     img_paths = list(RAW_IMG_FOLDER_PATH.glob("*"))
-    fullnames_dict = parse_csv_to_dict(PROCESSED_DATA_PATH / "students.csv")
+    names_dict = parse_csv_to_dict(PROCESSED_DATA_PATH / "students.csv")
 
     keys = []
-    fullnames = []
+    names = []
     embeddings = []
 
     for img_path in img_paths:
@@ -68,10 +67,10 @@ def main() -> None:
         embedding = extract_embedding(img_path)
 
         keys.append(student_code)
-        fullnames.append(fullnames_dict[student_code])
+        names.append(names_dict[student_code])
         embeddings.append(embedding)
 
-    save_to_chroma(keys, embeddings, fullnames)
+    save_to_chroma(keys, embeddings, names)
 
 
 if __name__ == "__main__":

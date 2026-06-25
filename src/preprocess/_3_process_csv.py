@@ -8,48 +8,41 @@ from src import PROCESSED_DATA_PATH, RAW_CSV_PATH
 
 
 def process_csv(csv_path: Path) -> pd.DataFrame:
-    return (
-        pd.read_csv(csv_path)
-        .drop(columns=["Index", "Image"], errors="ignore")
-        .assign(
-            Fullname=lambda df: (
-                df["Surname"].fillna("")
-                + " "
-                + df["Middle name"].fillna("")
-                + " "
-                + df["Given name"].fillna("")
-            )
+    df = pd.read_csv(csv_path)
+
+    df.drop(columns=["Index", "Image"], errors="ignore", inplace=True)
+    df = df.assign(Fullname=lambda df: (
+            df["Surname"].fillna("")
+            + " "
+            + df["Middle name"].fillna("")
+            + " "
+            + df["Given name"].fillna("")
         )
-        .assign(
-            Fullname=lambda df: (
-                df["Fullname"].str.strip().str.replace(r"\s+", " ", regex=True)
-            )
-        )
-        .drop(columns=["Surname", "Middle name", "Given name"], errors="ignore")
     )
+    df = df.assign(Fullname=lambda df: df["Fullname"].str.strip().str.replace(r"\s+", " ", regex=True))
+    df.drop(columns=["Surname", "Middle name", "Given name"], errors="ignore", inplace=True)
+
+    df.rename(columns={"Code": "id", "Fullname": "name"}, inplace=True)
+
+    return df
 
 
 def merge_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([df1, df2], ignore_index=True).drop_duplicates(
-        subset=["Code"], keep="first"
-    )
-
-
-def process_and_merge_csvs(csv_paths: list[Path]) -> pd.DataFrame:
-    return (
-        reduce(merge_dataframes, map(process_csv, csv_paths))
-        if csv_paths
-        else pd.DataFrame()
+        subset=["id"], keep="first"
     )
 
 
 def main() -> None:
-    csv_list = list(RAW_CSV_PATH.glob("*.csv"))
+    csv_paths = list(RAW_CSV_PATH.glob("*.csv"))
+    subject_dfs = list(map(process_csv, csv_paths))
 
-    df = process_and_merge_csvs(csv_list)
+    os.makedirs(PROCESSED_DATA_PATH / "subjects", exist_ok=True)
+    for csv_path, subject_df in zip(csv_paths, subject_dfs):
+        subject_df.to_csv(PROCESSED_DATA_PATH / "subjects" / csv_path.name, index=False)
 
-    os.makedirs(PROCESSED_DATA_PATH, exist_ok=True)
-    df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)
+    all_students_df = reduce(merge_dataframes, subject_dfs)
+    all_students_df.to_csv(PROCESSED_DATA_PATH / "students.csv", index=False)
 
 
 if __name__ == "__main__":
