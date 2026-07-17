@@ -4,49 +4,49 @@
 
 First, install [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-Then run in project root:
+Then, setup virtual env:
 
 ```sh
 uv sync
 ```
 
-## Preprocessing pipeline
+## Pipeline
 
 ```sh
-uv run python -m src.preprocess.pipeline
+uv run python -m src.main
 ```
 
-Results stored in *`data/processed/`*.
+This single `main.py` run:
 
-## Tests
+- Data processing pipeline
+- Generate ChromaDB
+- Generate SQLite db
+- Update Supabase db
 
-### 1. Image
+Just that.
 
-Test similality on single image:
+## Results
+
+### Images & CSVs
 
 ```sh
-uv run python -m tests.test_similarity
+ data
+├──  processed
+│   ├──  imgs              # Square cropped face images
+│   ├──  subjects          # CSV files of subjects (student id, student name)
+│   └──  students.csv      # All students (id, name)
+└──  raw                   # Raw data
+    ├──  csv               # Raw csv extracted for tables in web source
+    ├──  imgs              # Extracted images from web source
+    └──  web               # Raw crawled web source
 ```
 
-The results should look like this:
-
-```
-ID                   | Distance   | Cosine Similarity  | Metadata
---------------------------------------------------------------------------------
-HE204320             | 0.3404     | 0.6596             | {'fullname': 'Nguyễn Thế Anh'}
-HE190781             | 0.6927     | 0.3073             | {'fullname': 'Nguyễn Tuấn Hưng'}
-HE201503             | 0.7300     | 0.2700             | {'fullname': 'Cao Biên Thuỳ'}
-HE200883             | 0.7693     | 0.2307             | {'fullname': 'Tô Tấn Tài'}
-HE161773             | 0.7980     | 0.2020             | {'fullname': 'Nguyễn Đức Long'}
-HE171153             | 0.8279     | 0.1721             | {'fullname': 'Đỗ Văn Dũng'}
-HE204140             | 0.8312     | 0.1688             | {'fullname': 'Châm Duy Khoát'}
-...
-```
-
-### 2. Webcam
- 
-Or, open an OpenCV window:
+### DBs
 
 ```sh
-uv run python -m tests.test_face_recognition
+ db
+├──  chroma                # ChromaDB (saved by `chromadb.PersistentClient`)
+└──  db.sqlite3            # Generated SQLite db for backup
 ```
+
+And sync with **Supabase** db if `SUPABASE_URL` and `SUPABASE_KEY` provided in `.env`.
