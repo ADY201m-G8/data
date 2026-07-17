@@ -7,7 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.15.0",
     "chromadb>=1.5.9",
-    "dbml-sqlite>=0.3.3",
     "imutils>=0.5.4",
     "insightface>=1.0.1",
     "onnxruntime-gpu>=1.26.0",
