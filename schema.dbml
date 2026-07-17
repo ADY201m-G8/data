@@ -1,6 +1,6 @@
 Table students {
   id text [pk]
-  name text
+  name text [not null]
 }
 
 Table subjects {
@@ -9,7 +9,7 @@ Table subjects {
 
 Table enrollments {
   student_id text [ref: > students.id]
-  subject_id integer [ref: > subjects.id]
+  subject_id text [ref: > subjects.id]
 }
 
 Table rooms {
@@ -18,22 +18,19 @@ Table rooms {
 
 Table lessons {
   id integer [pk, increment]
-  subject_id integer [ref: > subjects.id]
+  subject_id text [ref: > subjects.id]
   room_id text [ref: > rooms.id]
-  date date 
-  slot integer
-
-  Indexes {
-    (room_id, slot) [unique] 
-  }
+  date date [not null]
+  slot integer [not null]
 }
 
 Table attendances {
+  id integer [pk, increment]
   lesson_id integer [ref: > lessons.id]
   student_id text [ref: > students.id]
-  present integer
+  present bool
 
   Indexes {
-    (lesson_id, student_id) [pk]
+    (lesson_id, student_id) [unique]
   }
 }
