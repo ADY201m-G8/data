@@ -1,14 +1,14 @@
-from src import SQLITE_PATH
-import os
-import sqlite3
-from dbml_sqlite import toSQLite
-
 import csv
 import os
 import sqlite3
 from pathlib import Path
 
-from src import SQLITE_PATH, PROCESSED_DATA_PATH
+from dbml_sqlite import toSQLite
+from dotenv import load_dotenv
+from supabase import Client, create_client
+
+from src import PROCESSED_DATA_PATH, SQLITE_PATH
+
 
 
 def dbml2sqlite(dbml_path: Path, sqlite_path: Path):
@@ -41,7 +41,12 @@ def parse_enrollments_csv(csv_path: Path) -> list[tuple]:
         return data
 
 
-def write_sqlite(db_path: Path, students: list[tuple], subjects: list[tuple], enrollments: list[tuple]) -> None:
+def write_sqlite(
+    db_path: Path,
+    students: list[tuple],
+    subjects: list[tuple],
+    enrollments: list[tuple],
+) -> None:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
 
@@ -80,13 +85,21 @@ def write_sqlite(db_path: Path, students: list[tuple], subjects: list[tuple], en
         conn.commit()
 
 
+def upsert_supabase() -> None:
+    load_dotenv()
+    
+    url: str = os.environ.get("SUPABASE_URL", default="")
+    key: str = os.environ.get("SUPABASE_KEY", default="")
+    
+    supabase: Client = create_client(url, key)
+
 def main():
     dbml2sqlite(Path("./db/schema.dbml"), SQLITE_PATH)
 
     csv_paths = list((PROCESSED_DATA_PATH / "subjects").glob("*.csv"))
 
     students = parse_students_csv(PROCESSED_DATA_PATH / "students.csv")
-    subjects = list(map(lambda p: (p.stem, ), csv_paths))
+    subjects = list(map(lambda p: (p.stem,), csv_paths))
     enrollments = []
     for csv_path in csv_paths:
         enrollments.extend(parse_enrollments_csv(csv_path))

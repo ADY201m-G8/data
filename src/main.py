@@ -1,7 +1,8 @@
 from src.preprocess import pipeline
 from src.db import (
     build_sqlite,
-    build_chromadb
+    build_chromadb,
+    update_supabase,
 )
 
 def main():
@@ -9,6 +10,7 @@ def main():
 
     build_sqlite.main()
     build_chromadb.main()
+    update_supabase.main()
 
 
 if __name__ == "__main__":

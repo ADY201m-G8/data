@@ -12,4 +12,5 @@ dependencies = [
     "insightface>=1.0.1",
     "onnxruntime-gpu>=1.26.0",
     "pandas>=3.0.3",
+    "supabase>=2.31.0",
 ]
